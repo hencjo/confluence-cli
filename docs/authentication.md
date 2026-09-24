@@ -90,3 +90,20 @@ remain readable and can be moved transactionally with
 
 Stored profiles live under the platform config directory selected by
 `directories::ProjectDirs`.
+
+## Private certificate authorities
+
+The CLI verifies TLS against the operating-system trust store, so a Data
+Center behind an internal certificate authority works as soon as that CA is
+trusted by the machine. To trust a CA for the CLI only, point the standard
+OpenSSL variables at it instead:
+
+```bash
+export SSL_CERT_FILE=/path/to/internal-ca.pem   # a single PEM bundle
+export SSL_CERT_DIR=/path/to/hashed/cert/dir    # or an OpenSSL c_rehash directory
+```
+
+Both variables replace the system store for that process. On NixOS,
+`security.pki.certificateFiles` sets `SSL_CERT_FILE` system-wide, so no
+extra configuration is needed. On macOS the CLI reads the Keychain, including
+CAs installed by device management.
